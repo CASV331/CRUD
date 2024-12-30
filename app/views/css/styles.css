@@ -35,3 +35,9 @@ body,html {
     left: inherit !important;
     right: 0px;
 }
+figure img {
+    width: 200px; /* O el tamaño que prefieras */
+    height: 200px;
+    object-fit: cover; /* Recorta y ajusta la imagen al contenedor */
+    border-radius: 100%; /* Esto redondeará las imágenes para un efecto circular */
+}

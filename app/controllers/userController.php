@@ -184,7 +184,7 @@ class userController extends mainModel
                     $foto = $foto . ".png";
                     break;
             }
-            chmod($imgDir, 0777);
+            chmod($imgDir, 0775);
 
             //moviendo la imagen al directorio
             if (!move_uploaded_file($_FILES['usuario_foto']['tmp_name'], $imgDir . $foto)) {
@@ -242,7 +242,6 @@ class userController extends mainModel
                 "campo_valor" => 0
             ]
         ];
-
         $registrarUsuario = $this->guardarDatos("usuario", $usuario_datos_reg);
         if ($registrarUsuario->rowCount() == 1) {
             $alerta = [
@@ -254,7 +253,7 @@ class userController extends mainModel
         } else {
 
             if (is_file($imgDir . $foto)) {
-                chmod($imgDir . $foto, 0777);
+                chmod($imgDir . $foto, 0775);
                 unlink($imgDir . $foto);
             }
             $alerta = [

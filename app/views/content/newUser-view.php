@@ -37,7 +37,7 @@
                 <div class="mb-3">
                     <label for="usuario_password_1" class="form-label">Clave</label>
                     <input type="password" id="usuario_password_1" class="form-control" name="usuario_password_1"
-                        pattern="[a-zA-Z0-9$@.\-]{7,100}" maxlength="100" required>
+                        pattern="[a-zA-Z0-9$@.\-]{7,20}" maxlength="20" required>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 <div class="mb-3">
                     <label for="usuario_password_2" class="form-label">Repetir clave</label>
                     <input type="password" id="usuario_password_2" class="form-control" name="usuario_password_2"
-                        pattern="[a-zA-Z0-9$@.\-]{7,100}" maxlength="100" required>
+                        pattern="[a-zA-Z0-9$@.\-]{7,20}" maxlength="20" required>
                 </div>
             </div>
         </div>

@@ -37,9 +37,9 @@ $texto = $sesion ? "Usuarios" : "Perfil";
                     </a>
                     <ul class="dropdown-menu dm-menu">
 
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>newUser/">Mi cuenta</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userList/">Mi foto</a></li>
-                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>userSearch/">Cerrar sesion</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL . "userUpdate/" . $_SESSION['id'] . "/"; ?>">Mi cuenta</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL . "userPhoto/" . $_SESSION['id'] . "/"; ?>">Mi foto</a></li>
+                        <li><a class="dropdown-item" href="<?php echo APP_URL; ?>logOut/" id="btn_exit">Cerrar sesion</a></li>
                     </ul>
                 </div>
             </ul>
