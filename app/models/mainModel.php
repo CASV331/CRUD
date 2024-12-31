@@ -138,82 +138,56 @@ class mainModel
 
     protected function paginacion($pagina, $numeroPag, $url, $btns)
     {
+        $tabla = '<nav aria-label="Page navigation" class="d-flex justify-content-center">';
+        $tabla .= '<ul class="pagination pagination-rounded">';
 
-        $tabla = '<nav aria-label="Page navigation">';
+        // Botón anterior
         if ($pagina <= 1) {
             $tabla .= '
-            <!--Boton anterior deshabilitado-->
             <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-            </li>
-            <ul class="pagination justify-content-center">
-            ';
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+            </li>';
         } else {
             $tabla .= '
-            <!--Boton anterior habilitado-->
             <li class="page-item">
-            <a class="page-link" href="' . $url . ($pagina - 1) . '/">Anterior</a>
-            </li>
-            <ul class="pagination justify-content-center">
-
-            <!--Paginas enumeradas-->
-            <li class="page-item">
-            <a class="page-link" href="' . $url . '1/' . '">1</a>
-            </li>
-
-            <!--Elipsis-->
-            <li class="page-item disabled">
-            <span class="page-link">…</span> <!-- Elipsis -->
-            </li>
-            ';
+                <a class="page-link" href="' . $url . ($pagina - 1) . '/">Anterior</a>
+            </li>';
         }
+
+        // Páginas numeradas
         $contador = 0;
         for ($i = $pagina; $i <= $numeroPag; $i++) {
-
             if ($contador >= $btns) {
                 break;
             }
             if ($pagina == $i) {
                 $tabla .= '
                 <li class="page-item active" aria-current="page">
-                <a class="page-link" href="' . $url . $i . '/">' . $i . '</a>
+                    <a class="page-link" href="' . $url . $i . '/">' . $i . '</a>
                 </li>';
             } else {
                 $tabla .= '
-                <li class="page-item " aria-current="page">
-                <a class="page-link" href="' . $url . $i . '/">' . $i . '</a>
+                <li class="page-item">
+                    <a class="page-link" href="' . $url . $i . '/">' . $i . '</a>
                 </li>';
             }
             $contador++;
         }
-        if ($pagina = $numeroPag) {
+
+        // Botón siguiente
+        if ($pagina >= $numeroPag) {
             $tabla .= '
-            </ul>
-            <!--Boton siguiente deshabilitado-->
             <li class="page-item disabled">
-            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Siguiente</a>
-            </li>
-            
-            ';
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Siguiente</a>
+            </li>';
         } else {
             $tabla .= '
-            <!--Elipsis-->
-            <li class="page-item disabled">
-            <span class="page-link">…</span> <!-- Elipsis -->
-            </li>
-            
-            <!--Boton enumerado-->
             <li class="page-item">
-            <a class="page-link" href="' . $url . $numeroPag . '/">' . $numeroPag . '</a>
-            </li>
-
-            <!--Boton siguiente habilitado-->
-            </u>
-            <li class="page-item">
-            <a class="page-link" href="' . $url . ($pagina + 1) . '/">Siguiente</a>
-            </li>
-            ';
+                <a class="page-link" href="' . $url . ($pagina + 1) . '/">Siguiente</a>
+            </li>';
         }
+
+        $tabla .= '</ul>';
         $tabla .= '</nav>';
         return $tabla;
     }
