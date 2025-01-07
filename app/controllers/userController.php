@@ -266,6 +266,7 @@ class userController extends mainModel
         return json_encode($alerta);
     }
 
+    // Controlador para listar usuarios
     public function listarUsuarioControlador($pagina, $registros, $url, $busqueda)
     {
         $pagina = $this->limpiarCadena($pagina);
@@ -279,13 +280,13 @@ class userController extends mainModel
         $inicio = ($pagina > 0) ? (($pagina * $registros) - $registros) : 0;
 
         if (isset($busqueda) && $busqueda != "") {
-            $consulta_datos = "SELECT * FROM usuario WHERE ((usuario_id!='" . $_SESSION['id'] . "' AND usuario_nombre != 'Admin') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%')) ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
+            $consulta_datos = "SELECT * FROM usuario WHERE ((usuario_id!='" . $_SESSION['id'] . "' AND usuario_id != '1') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%')) ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
 
-            $consulta_total = "SELECT COUNT(usuario_id) FROM usuario WHERE ((usuario_id!='" . $_SESSION['id'] . "' AND usuario_nombre != 'Admin') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%'))";
+            $consulta_total = "SELECT COUNT(usuario_id) FROM usuario WHERE ((usuario_id!='" . $_SESSION['id'] . "' AND usuario_id != '1') AND (usuario_nombre LIKE '%$busqueda%' OR usuario_apellido LIKE '%$busqueda%' OR usuario_usuario LIKE '%$busqueda%'))";
         } else {
-            $consulta_datos = "SELECT * FROM usuario WHERE usuario_id!='" . $_SESSION['id'] . "' AND usuario_nombre != 'Admin' ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
+            $consulta_datos = "SELECT * FROM usuario WHERE usuario_id!='" . $_SESSION['id'] . "' AND usuario_id != '1' ORDER BY usuario_nombre ASC LIMIT $inicio,$registros";
 
-            $consulta_total = "SELECT COUNT(usuario_id) FROM usuario WHERE usuario_id!='" . $_SESSION['id'] . "' AND usuario_nombre != 'Admin'";
+            $consulta_total = "SELECT COUNT(usuario_id) FROM usuario WHERE usuario_id!='" . $_SESSION['id'] . "' AND usuario_id != '1'";
         }
 
         $datos = $this->ejecutarConsulta($consulta_datos);
@@ -333,7 +334,7 @@ class userController extends mainModel
                         <a href="' . APP_URL . 'userUpdate/' . $rows['usuario_id'] . '/" class="btn btn-success btn-sm rounded-pill">Actualizar</a>
                     </td>
                     <td>
-                        <form class="FormularioAjax" action="' . APP_URL . 'app/ajax/usuarioAjax.php" method="POST" autocomplete="off">
+                        <form class="formularioAjax" action="' . APP_URL . 'app/ajax/usuarioAjax.php" method="POST" autocomplete="off">
                             <input type="hidden" name="modulo_usuario" value="eliminar">
                             <input type="hidden" name="usuario_id" value="' . $rows['usuario_id'] . '">
                             <button type="submit" class="btn btn-danger btn-sm rounded-pill">Eliminar</button>
@@ -377,5 +378,56 @@ class userController extends mainModel
             $tabla .= $this->paginacion($pagina, $numPaginas, $url, 10);
         }
         return $tabla;
+    }
+
+    // Controlador para eliminar usuarios
+    public function eliminarUsuarioControlador()
+    {
+        $id = $this->limpiarCadena($_POST['usuario_id']);
+
+        if ($id == 1) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No podemos eliminar el usuario principal del sistema",
+                "icon" => "error"
+            ];
+        }
+        // Verficar el usuario
+        $datos = $this->ejecutarConsulta("SELECT * FROM usuario WHERE usuario_id = '$id'");
+
+        if ($datos->rowCount() <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No se encontro usuario en el sistema",
+                "icon" => "error"
+            ];
+        } else {
+            $datos = $datos->fetch();
+        }
+
+        $elimnarUsuario = $this->eliminarRegistro("usuario", "usuario_id", $id);
+        if ($elimnarUsuario->rowCount() == 1) {
+
+            if (is_file("../views/photos/" . $datos['usuario_foto'])) {
+                chmod("../views/photos/" . $datos['usuario_foto'], 0775);
+                unlink("../views/photos/" . $datos['usuario_foto']);
+            }
+            $alerta = [
+                "tipo" => "recargar",
+                "titulo" => "Usuario eliminado",
+                "texto" => "El usuario " . $datos['usuario_nombre'] . " " . $datos['usuario_apellido'] . " ha sido eliminado",
+                "icon" => "success"
+            ];
+        } else {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No fue posible eliminar el usuario " . $datos['usuario_nombre'] . " " . $datos['apellido'],
+                "icon" => "error"
+            ];
+        }
+        return json_encode($alerta);
     }
 }

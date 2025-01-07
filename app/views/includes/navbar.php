@@ -1,8 +1,3 @@
-<?php
-// Recuerda validar la sesion
-$sesion = true;
-$texto = $sesion ? "Usuarios" : "Perfil";
-?>
 <nav class="navbar  navbar-expand-md navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="<?php echo APP_URL; ?>dashboard/">
@@ -14,16 +9,16 @@ $texto = $sesion ? "Usuarios" : "Perfil";
         <div class="collapse navbar-collapse " id="navbarNav">
             <ul class="d-flex flex-md-row gap-3 navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link activo" aria-current="page" href="<?php echo APP_URL; ?>dashboard/">Home</a>
+                    <a class="nav-link" aria-current="page" href="<?php echo APP_URL; ?>dashboard/">Home</a>
                 </li>
                 <li class="nav-item">
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="">Clientes</a>
                 </li>
-                <div class="dropdown">
+                <div class="dropdown <?php echo $_SESSION['id'] == 1 ?  '' : 'd-none' ?>">
                     <a class="btn btn-secondary btnDrop dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?php echo $texto; ?>
+                        Usuarios
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?php echo APP_URL; ?>newUser/">Nuevo</a></li>

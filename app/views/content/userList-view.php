@@ -1,3 +1,8 @@
+<?php
+if ($_SESSION['id'] != 1) {
+    header('Location:' . APP_URL . 'dashboard/');
+}
+?>
 <div class="container my-4">
     <h1 class="display-5">Usuarios</h1>
     <h2 class="lead">Lista de usuarios</h2>
