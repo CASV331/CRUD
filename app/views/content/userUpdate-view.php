@@ -65,19 +65,19 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="usuario_clave_1" class="form-label">Nueva clave</label>
-                        <input type="password" class="form-control" id="usuario_clave_1" name="usuario_clave_1" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+                        <label for="usuario_password_1" class="form-label">Nueva clave</label>
+                        <input type="password" class="form-control" id="usuario_password_1" name="usuario_password_1" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="usuario_clave_2" class="form-label">Repetir nueva clave</label>
-                        <input type="password" class="form-control" id="usuario_clave_2" name="usuario_clave_2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
+                        <label for="usuario_password_2" class="form-label">Repetir nueva clave</label>
+                        <input type="password" class="form-control" id="usuario_password_2" name="usuario_password_2" pattern="[a-zA-Z0-9$@.-]{7,100}" maxlength="100">
                     </div>
                 </div>
             </div>
 
-            <p class="text-center">
+            <p class="text-center fw-bold">
                 Para poder actualizar los datos de este usuario por favor ingrese su USUARIO y CLAVE con la que ha iniciado sesión
             </p>
 

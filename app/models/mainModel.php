@@ -114,7 +114,7 @@ class mainModel
             $query .= $dato['campo_nombre'] . " = " . $dato['campo_marcador'];
             $c++;
         }
-        $query .= "WHERE " . $condicion["condicion_campo"] . " = " . $condicion["condicion_marcador"];
+        $query .= " WHERE " . $condicion["condicion_campo"] . " = " . $condicion["condicion_marcador"];
 
         $sql = $this->conectar()->prepare($query);
 
@@ -123,13 +123,15 @@ class mainModel
         }
 
         $sql->bindParam($condicion["condicion_marcador"], $condicion["condicion_valor"]);
+
         $sql->execute();
+
         return $sql;
     }
 
     protected function eliminarRegistro($tabla, $campo, $id)
     {
-        $sql = $this->conectar()->prepare("DELETE FROM $tabla WHERE $campo=:id");
+        $sql = $this->conectar()->prepare("UPDATE $tabla SET usuario_borrado = 1 WHERE $campo=:id");
         $sql->bindParam(":id", $id);
         $sql->execute();
 
