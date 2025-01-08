@@ -446,6 +446,8 @@ class userController extends mainModel
                 "texto" => "No se encontro usuario en el sistema",
                 "icon" => "error"
             ];
+            return json_encode($alerta);
+            exit;
         } else {
             $datos = $datos->fetch();
         }
@@ -688,6 +690,238 @@ class userController extends mainModel
                 "titulo" => "Error al actualizar el usuario",
                 "texto" => "No fue posible actualizar el usuario, intente nuevamente",
                 "icon" => "error"
+            ];
+        }
+        return json_encode($alerta);
+    }
+
+    // Controlador para actualizar foto de usuario
+    public function actualizarFotoUsuarioControlador()
+    {
+        $id = $this->limpiarCadena($_POST['usuario_id']);
+        // Verficar el usuario
+        $datos = $this->ejecutarConsulta("SELECT * FROM usuario WHERE usuario_id = '$id'");
+
+        if ($datos->rowCount() <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No se encontro usuario en el sistema",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit;
+        } else {
+            $datos = $datos->fetch();
+        }
+        # Directorio de imagenes #
+        $imgDir = "../views/photos/";
+
+        #Comprobar si se selecciono una imagen
+        if ($_FILES['usuario_foto']['name'] == "" && $_FILES['usuario_foto']['size'] <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No has seleccionado una imagen valida",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit;
+        }
+
+        // Creando directorio
+        if (!file_exists($imgDir)) {
+            if (!mkdir($imgDir, 0775)) {
+                $alerta = [
+                    "tipo" => "simple",
+                    "titulo" => "Error al subir el archivo",
+                    "texto" => "Error al crear el directorio",
+                    "icon" => "error"
+                ];
+                return json_encode($alerta);
+                exit();
+            }
+        }
+
+        // Verificando formato de las imagenes
+        if (mime_content_type($_FILES['usuario_foto']['tmp_name']) != "image/jpeg" && mime_content_type($_FILES['usuario_foto']['tmp_name']) != "image/png") {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error al subir el archivo",
+                "texto" => "La imagen debe ser de formato jpeg/png",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+
+        if (($_FILES['usuario_foto']['size'] / 1024) > 5120) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error al subir el archivo",
+                "texto" => "El tamaño de la imagen debe ser menor a 5MB",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+        //Nombre de la foto
+        if ($datos['usuario_foto'] != "") {
+            $foto = explode(".", $datos['usuario_foto']);
+            $foto = $foto[0];
+        } else {
+            $foto = str_ireplace(" ", "_", $datos['usuario_nombre'] . "_" . $datos['usuario_apellido']);
+            $foto = $foto . "_" . rand(0, 100);
+        }
+
+        //Extension de la imagen
+        switch (mime_content_type($_FILES['usuario_foto']['tmp_name'])) {
+            case "image/jpeg":
+                $foto = $foto . ".jpg";
+                break;
+            case "image/png":
+                $foto = $foto . ".png";
+                break;
+        }
+        chmod($imgDir, 0775);
+
+        //moviendo la imagen al directorio
+        if (!move_uploaded_file($_FILES['usuario_foto']['tmp_name'], $imgDir . $foto)) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error al subir el archivo",
+                "texto" => "En este momento no podemos actualizar la imagen",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit();
+        }
+
+        // Eliminando la imagen anterior
+        if (is_file($imgDir . $datos['usuario_foto']) && $datos['usuario_foto'] != $foto) {
+            chmod($imgDir . $datos['usuario_foto'], 755);
+            unlink($imgDir . $datos['usuario_foto']);
+        }
+        $usuario_datos_up = [
+            [
+                "campo_nombre" => "usuario_foto",
+                "campo_marcador" => ":Foto",
+                "campo_valor" => $foto
+            ],
+            [
+                "campo_nombre" => "usuario_actualizado",
+                "campo_marcador" => ":Actualizado",
+                "campo_valor" => date("Y/m/d H:i")
+            ]
+        ];
+
+        $condicion = [
+            "condicion_campo" => "usuario_id",
+            "condicion_marcador" => ":ID",
+            "condicion_valor" => $id
+        ];
+        if ($this->actualizarDatos("usuario", $usuario_datos_up, $condicion)) {
+            if ($id == $_SESSION['id']) {
+                $_SESSION['foto'] = $foto;
+            }
+            $alerta = [
+                "tipo" => "recargar",
+                "titulo" => "Foto actualizada con exito",
+                "texto" => "Foto del usuario " . $datos['usuario_nombre'] . " " . $datos['usuario_apellido'] . " actualizada correctamente",
+                "icon" => "success"
+            ];
+        } else {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Foto actualizada",
+                "texto" => "No fue posible actualizar algunos datos del usuario " . $datos['usuario_nombre'] . " " . $datos['usuario_apellido'] . " , la foto se ha actualizado con exito",
+                "icon" => "warning"
+            ];
+        }
+        return json_encode($alerta);
+    }
+
+    # Controlador eliminar foto de usuario
+    public function eliminarFotoUsuarioControlador()
+    {
+        $id = $this->limpiarCadena($_POST['usuario_id']);
+        // Verficar el usuario
+        $datos = $this->ejecutarConsulta("SELECT * FROM usuario WHERE usuario_id = '$id'");
+
+        if ($datos->rowCount() <= 0) {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No se encontro usuario en el sistema",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit;
+        } else {
+            $datos = $datos->fetch();
+        }
+        # Directorio de imagenes #
+        $imgDir = "../views/photos/";
+        chmod($imgDir, 755);
+
+        if (is_file($imgDir . $datos['usuario_foto'])) {
+            chmod($imgDir . $datos['usuario_foto'], 755);
+
+            if (!unlink($imgDir . $datos['usuario_foto'])) {
+                $alerta = [
+                    "tipo" => "simple",
+                    "titulo" => "Error",
+                    "texto" => "No fue posible eliminar la foto del usuario, por favor intente de nuevo",
+                    "icon" => "error"
+                ];
+                return json_encode($alerta);
+                exit;
+            }
+        } else {
+            $alerta = [
+                "tipo" => "simple",
+                "titulo" => "Error",
+                "texto" => "No se encontro foto del usuario en el sistema",
+                "icon" => "error"
+            ];
+            return json_encode($alerta);
+            exit;
+        }
+
+        $usuario_datos_up = [
+            [
+                "campo_nombre" => "usuario_foto",
+                "campo_marcador" => ":Foto",
+                "campo_valor" => ""
+            ],
+            [
+                "campo_nombre" => "usuario_actualizado",
+                "campo_marcador" => ":Actualizado",
+                "campo_valor" => date("Y/m/d H:i")
+            ]
+        ];
+
+        $condicion = [
+            "condicion_campo" => "usuario_id",
+            "condicion_marcador" => ":ID",
+            "condicion_valor" => $id
+        ];
+        if ($this->actualizarDatos("usuario", $usuario_datos_up, $condicion)) {
+            if ($id == $_SESSION['id']) {
+                $_SESSION['foto'] = "";
+            }
+            $alerta = [
+                "tipo" => "recargar",
+                "titulo" => "Foto eliminada con exito",
+                "texto" => "Foto del usuario " . $datos['usuario_nombre'] . " " . $datos['usuario_apellido'] . " eliminada correctamente",
+                "icon" => "success"
+            ];
+        } else {
+            $alerta = [
+                "tipo" => "recargar",
+                "titulo" => "Foto eliminada",
+                "texto" => "No fue posible actualizar algunos datos del usuario " . $datos['usuario_nombre'] . " " . $datos['usuario_apellido'] . " , la foto se ha elimino con exito",
+                "icon" => "warning"
             ];
         }
         return json_encode($alerta);
